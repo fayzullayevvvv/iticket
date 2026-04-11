@@ -1,7 +1,10 @@
 import enum
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, FutureDatetime
+
+from app.schemas.venue import VenueResponse
+from app.schemas.category import CategoryResponse
 
 
 class TicketTypeEnum(str, enum.Enum):
@@ -18,7 +21,7 @@ class TicketQuantity(BaseModel):
 
 class CreateEvent(BaseModel):
     title: str = Field(max_length=150)
-    date: datetime
+    date: FutureDatetime
     category_id: int = Field(gt=0)
     venue_id: int = Field(gt=0)
 
@@ -47,6 +50,16 @@ class EventResponse(BaseModel):
     date: datetime
     category_id: int
     venue_id: int
+
+    ticket_types: list[TicketQuantity]
+
+
+class EventDetailResponse(BaseModel):
+    id: int
+    title: str
+    date: datetime
+    category: CategoryResponse | None
+    venue: VenueResponse | None
 
     ticket_types: list[TicketQuantity]
 

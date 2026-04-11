@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.models import Event, TicketType, Venue
+from app.models import Event, TicketType, Venue, Category
 
 from app.schemas.event import CreateEvent, UpdateEvent, EVentFilter
 
@@ -13,11 +13,19 @@ class EventService:
         self.db = db
 
     def create_event(self, data: CreateEvent) -> Event:
-        existing = self.get_event_by_title(data.title)
-        if existing:
+        existing_event = self.get_event_by_title(data.title)
+        if existing_event:
             raise HTTPException(
                 status_code=400, detail="Event with this title already exists"
             )
+
+        existing_category = self.db.query(Category).get(data.category_id)
+        if not existing_category:
+            raise HTTPException(status_code=400, detail="Category not found.")
+
+        existing_venue = self.db.query(Venue).get(data.venue_id)
+        if not existing_venue:
+            raise HTTPException(status_code=400, detail="Venue not found.")
 
         event = Event(
             title=data.title,

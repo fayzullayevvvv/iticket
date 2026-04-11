@@ -4,7 +4,13 @@ from fastapi import APIRouter, Depends, Path, Body, Query
 from sqlalchemy.orm import Session
 
 from app.services.event_service import EventService
-from app.schemas.event import CreateEvent, EVentFilter, EventResponse, UpdateEvent
+from app.schemas.event import (
+    CreateEvent,
+    EVentFilter,
+    EventResponse,
+    UpdateEvent,
+    EventDetailResponse,
+)
 from app.core.security import get_admin
 from app.db.session import get_db
 from app.models.user import User
@@ -27,7 +33,7 @@ async def events_view(
     return events
 
 
-@router.get("/{id}", response_model=EventResponse)
+@router.get("/{id}", response_model=EventDetailResponse)
 async def get_event_view(
     id: Annotated[int, Path()], db: Annotated[Session, Depends(get_db)]
 ):
